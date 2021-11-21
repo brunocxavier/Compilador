@@ -5,7 +5,7 @@ public class Token {
         this.tag = tag;
     }
 
-    public String toString(){
+    public String toString() {
         return "" + tag;
     }
 
