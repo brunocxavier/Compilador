@@ -18,6 +18,7 @@ public class Tag {
     WRITE = 271,
     NUM = 278,
     ID = 279,
+    LITERAL = 280,
     EQ = 288,
     GE = 289,
     LE = 290,

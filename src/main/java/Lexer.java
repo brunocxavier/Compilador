@@ -7,7 +7,7 @@ public class Lexer {
     public static int line = 1; //contador de linhas
     private char ch = ' '; //caractere lido do arquivo
     private FileReader file;
-    private Hashtable<String, Object> words = new Hashtable<>();
+    public Hashtable<String, Word> words = new Hashtable<>();
 
     /* Método para inserir palavras reservadas na HashTable */
     private void reserve(Word w){
@@ -63,13 +63,20 @@ public class Lexer {
     public Token scan() throws IOException {
         //Desconsidera delimitadores na entrada
         for (; ; readch()) {
-            if (ch == ' ' || ch == '\t' || ch == '\r' || ch == '\b') {
-                continue;
-            } else if (ch == '\n') {
-                line++; //conta linhas
-            } else {
-                break;
+            if (ch != ' ' && ch != '\t' && ch != '\r' && ch != '\b') {
+                if (ch == '\n') {
+                    line++; //conta linhas
+                } else {
+                    break;
+                }
             }
+        }
+
+        //Comentario {
+        if (ch == '/' && readch('*')) {
+            do {
+                readch();
+            } while (ch != '*' || !readch('/'));
         }
 
         switch (ch) {
@@ -113,35 +120,70 @@ public class Lexer {
         }
 
         //Números
-        //TODO float
         if (Character.isDigit(ch)) {
             int value = 0;
             do {
                 value = 10 * value + Character.digit(ch, 10);
                 readch();
             } while (Character.isDigit(ch));
-            return new Num(value);
+            if (ch == '.') {
+                StringBuilder stringValueBd = new StringBuilder("" + value);
+                do {
+                    stringValueBd.append(ch);
+                    readch();
+                } while (Character.isDigit(ch));
+                return new NumFloat(stringValueBd.toString());
+            }
+            return new NumInt(value);
         }
 
         //Identificadores
         if (Character.isLetter(ch)) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             do {
                 sb.append(ch);
                 readch();
-            } while (Character.isLetterOrDigit(ch));
+            } while (Character.isLetterOrDigit(ch) || '_' == ch);
             String s = sb.toString();
-            Word w = (Word) words.get(s);
+            Word w = words.get(s);
             if (w != null) return w; //palavra já existe na HashTable
             w = new Word(s, Tag.ID);
             words.put(s, w);
             return w;
         }
 
-        //TODO literal string
+        //literal
+        if (ch == '{') {
+            StringBuilder sb = new StringBuilder();
+            do {
+                sb.append(ch);
+                readch();
+            } while (ch != '}');
+            sb.append(ch);
+            ch = ' ';
+            String s = sb.toString();
+            return new Word(s, Tag.LITERAL);
+        }
+
+        //char
+        if (ch == '\'') {
+            StringBuilder sb = new StringBuilder();
+            do {
+                sb.append(ch);
+                readch();
+            } while (ch != '\'');
+            sb.append(ch);
+            ch = ' ';
+            String s = sb.toString();
+            return new Word(s, Tag.CHAR);
+        }
 
         Token t = new Token(ch);
         ch = ' ';
         return t;
+    }
+
+    public Hashtable<String, Word> getWords() {
+        return words;
     }
 }

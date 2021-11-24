@@ -1,7 +1,7 @@
-public class Num extends Token{
+public class NumInt extends Token{
     public final int value;
 
-    public Num(int value){
+    public NumInt(int value){
         super(Tag.NUM);
         this.value = value;
     }
