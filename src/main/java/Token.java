@@ -6,7 +6,7 @@ public class Token {
     }
 
     public String toString() {
-        return String.format("%c", tag);
+        return String.format("<%c, %d>", tag, tag);
     }
 
     public int getTag() {

@@ -1,5 +1,5 @@
 public class Word extends Token{
-    private String lexeme = "";
+    private String lexeme;
 
     public static final Word and = new Word ("&&", Tag.AND);
     public static final Word or = new Word ("||", Tag.OR);
@@ -14,9 +14,8 @@ public class Word extends Token{
     }
 
     public String toString(){
-        return "" + lexeme;
+        return "<" + lexeme + "," + tag + ">";
     }
-
     public String getLexeme() {
         return lexeme;
     }

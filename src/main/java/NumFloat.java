@@ -7,7 +7,7 @@ public class NumFloat extends Token{
     }
 
     public String toString(){
-        return "" + value;
+        return "<" + value + "," + tag + ">";
     }
 
     public float getValue() {

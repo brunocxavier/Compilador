@@ -7,7 +7,7 @@ public class NumInt extends Token{
     }
 
     public String toString(){
-        return "" + value;
+        return "<" + value + "," + tag + ">";
     }
 
     public int getValue() {

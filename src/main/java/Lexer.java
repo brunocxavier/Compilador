@@ -146,7 +146,9 @@ public class Lexer {
             } while (Character.isLetterOrDigit(ch) || '_' == ch);
             String s = sb.toString();
             Word w = words.get(s);
-            if (w != null) return w; //palavra já existe na HashTable
+            if (w != null) {
+                return w;
+            }
             w = new Word(s, Tag.ID);
             words.put(s, w);
             return w;
