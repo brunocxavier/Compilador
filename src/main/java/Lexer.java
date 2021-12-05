@@ -1,3 +1,8 @@
+import exceptions.CharWithSizeGraterThanOneException;
+import exceptions.InvalidFloatException;
+import exceptions.UnclosedCharException;
+import exceptions.UnclosedLiteralException;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -60,7 +65,7 @@ public class Lexer {
     }
 
 
-    public Token scan() throws IOException {
+    public Token scan() throws Exception {
         //Desconsidera delimitadores na entrada
         for (; ; readch()) {
             if (ch != ' ' && ch != '\t' && ch != '\r' && ch != '\b') {
@@ -128,10 +133,15 @@ public class Lexer {
             } while (Character.isDigit(ch));
             if (ch == '.') {
                 StringBuilder stringValueBd = new StringBuilder("" + value);
+                int size = 0;
                 do {
                     stringValueBd.append(ch);
                     readch();
+                    size ++;
                 } while (Character.isDigit(ch));
+                if (size < 2) {
+                    throw new InvalidFloatException("Invalid float value at line " + line);
+                }
                 return new NumFloat(stringValueBd.toString());
             }
             return new NumInt(value);
@@ -158,6 +168,9 @@ public class Lexer {
         if (ch == '{') {
             StringBuilder sb = new StringBuilder();
             do {
+                if (ch == Tag.EOF) {
+                    throw new UnclosedLiteralException("Unclosed literal at line " + line);
+                }
                 sb.append(ch);
                 readch();
             } while (ch != '}');
@@ -170,9 +183,17 @@ public class Lexer {
         //char
         if (ch == '\'') {
             StringBuilder sb = new StringBuilder();
+            int size = 0;
             do {
+                if (ch == Tag.EOF) {
+                    throw new UnclosedCharException("Unclosed char at line " + line);
+                }
+                if (size > 1) {
+                    throw new CharWithSizeGraterThanOneException("Invalid char at line " + line);
+                }
                 sb.append(ch);
                 readch();
+                size ++;
             } while (ch != '\'');
             sb.append(ch);
             ch = ' ';
@@ -183,9 +204,5 @@ public class Lexer {
         Token t = new Token(ch);
         ch = ' ';
         return t;
-    }
-
-    public Hashtable<String, Word> getWords() {
-        return words;
     }
 }

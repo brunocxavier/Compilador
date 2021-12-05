@@ -24,6 +24,7 @@ public class Tag {
     LE = 290,
     NE = 291,
     OR = 292,
-    AND = 293;
+    AND = 293,
+    EOF = 65535;
 }
 

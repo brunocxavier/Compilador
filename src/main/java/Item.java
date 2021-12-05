@@ -1,12 +1,12 @@
 public class Item {
     private String lexeme;
     private int level;
-    private String type;
+    private String value;
 
-    public Item(String lexeme, int level, String type) {
+    public Item(String lexeme, int level, String value) {
         this.lexeme = lexeme;
         this.level = level;
-        this.type = type;
+        this.value = value;
     }
 
     public String getLexeme() {
@@ -26,11 +26,11 @@ public class Item {
     }
 
     public String getType() {
-        return type;
+        return value;
     }
 
     public void setType(String type) {
-        this.type = type;
+        this.value = type;
     }
 
     @Override
@@ -38,11 +38,11 @@ public class Item {
         return "Item{" +
                 "lexeme='" + lexeme + '\'' +
                 ", level=" + level +
-                getTypeString() +
+                getValueString() +
                 '}';
     }
 
-    private String getTypeString() {
-        return !type.equals("") ? ", type=" + type : "";
+    private String getValueString() {
+        return !value.equals("") ? ", value=" + value : "";
     }
 }
