@@ -13,9 +13,9 @@ public class App {
                 if (token.tag == Tag.EOF) {
                     break;
                 } else if (token instanceof Word) {
-                    /*TODO Se o token for then deve se criar uma nova tabela de simbolos pra esse nivel
-                    *  se for end deve se excluir a tabela atual*/
-                    if (token.tag == Tag.ID) {//TODO passar pro analixador sintatico
+                    /*TODO Se for um novo escopo deve se criar uma nova tabela de simbolos pra esse nivel
+                    *  se for o fim de um escopo deve mudar a tabela atual para o pai da atual*/
+                    if (token.tag == Tag.ID) {
                         Word word = (Word) token;
                         if (!actualTable.exists(word.getLexeme())) {
                             actualTable.add(new Item(word.getLexeme(), level, ""));

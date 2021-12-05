@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class TableOfSymbols {
     private List<Item> table;
@@ -21,13 +20,9 @@ public class TableOfSymbols {
         this.table.add(item);
     }
 
-    public void remove(int level) {
-        this.table = this.table.stream().filter(item -> item.getLevel() != level).collect(Collectors.toList());
-    }
-
     public boolean exists(String lexeme) {
         Optional<Item> itemOp = this.table.stream().filter(item -> lexeme.equals(item.getLexeme())).findAny();
-        return itemOp.isPresent() ||  existsInTop(lexeme);
+        return itemOp.isPresent() || existsInTop(lexeme);
     }
 
     private boolean existsInTop(String lexeme) {
