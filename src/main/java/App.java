@@ -3,7 +3,7 @@ import java.io.IOException;
 public class App {
     public static void main(String[] args) {
         try {
-            Lexer lexer = new Lexer("test1.txt");
+            Lexer lexer = new Lexer(args[0]);
             TableOfSymbols actualTable = new TableOfSymbols();
             int level = 0;
 
