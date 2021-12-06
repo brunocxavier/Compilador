@@ -10,5 +10,4 @@ com\cefet\compilador\exception\InvalidFloatException.class
 com\cefet\compilador\exception\UnclosedCommentException.class
 com\cefet\compilador\exception\UnclosedCharException.class
 com\cefet\compilador\exception\UnclosedLiteralException.class
-com\cefet\compilador\Item.class
 com\cefet\compilador\Tag.class
