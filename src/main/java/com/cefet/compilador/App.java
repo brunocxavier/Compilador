@@ -2,6 +2,10 @@ package com.cefet.compilador;
 
 public class App {
     public static void main(String[] args) {
+        if (args.length != 1) {
+            System.err.println("Passe o caminho do programa como parametro");
+            return;
+        }
         try {
             Lexer lexer = new Lexer(args[0]);
             TableOfSymbols actualTable = new TableOfSymbols();
