@@ -1,0 +1,14 @@
+exceptions\UnclosedLiteralException.class
+exceptions\CharWithSizeGraterThanOneException.class
+exceptions\InvalidFloatException.class
+exceptions\UnclosedCommentException.class
+Lexer.class
+Token.class
+Tag.class
+App.class
+Item.class
+Word.class
+NumFloat.class
+NumInt.class
+TableOfSymbols.class
+exceptions\UnclosedCharException.class
