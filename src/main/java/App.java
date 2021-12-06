@@ -25,7 +25,7 @@ public class App {
                 System.out.println(token);
             }
 
-            System.out.println("//////////////");
+            System.out.println();
             System.out.println("Tabela de simbolos");
             System.out.println(actualTable.getTable());
         } catch (Exception e) {

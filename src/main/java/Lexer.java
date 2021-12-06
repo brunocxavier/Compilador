@@ -1,7 +1,4 @@
-import exceptions.CharWithSizeGraterThanOneException;
-import exceptions.InvalidFloatException;
-import exceptions.UnclosedCharException;
-import exceptions.UnclosedLiteralException;
+import exceptions.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -79,9 +76,7 @@ public class Lexer {
 
         //Comentario {
         if (ch == '/' && readch('*')) {
-            do {
-                readch();
-            } while (ch != '*' || !readch('/'));
+            comment();
         }
 
         switch (ch) {
@@ -126,83 +121,111 @@ public class Lexer {
 
         //Números
         if (Character.isDigit(ch)) {
-            int value = 0;
-            do {
-                value = 10 * value + Character.digit(ch, 10);
-                readch();
-            } while (Character.isDigit(ch));
-            if (ch == '.') {
-                StringBuilder stringValueBd = new StringBuilder("" + value);
-                int size = 0;
-                do {
-                    stringValueBd.append(ch);
-                    readch();
-                    size ++;
-                } while (Character.isDigit(ch));
-                if (size < 2) {
-                    throw new InvalidFloatException("Invalid float value at line " + line);
-                }
-                return new NumFloat(stringValueBd.toString());
-            }
-            return new NumInt(value);
+            return numbers();
         }
 
         //Identificadores
         if (Character.isLetter(ch)) {
-            StringBuilder sb = new StringBuilder();
-            do {
-                sb.append(ch);
-                readch();
-            } while (Character.isLetterOrDigit(ch) || '_' == ch);
-            String s = sb.toString();
-            Word w = words.get(s);
-            if (w != null) {
-                return w;
-            }
-            w = new Word(s, Tag.ID);
-            words.put(s, w);
-            return w;
+            return identifiers();
         }
 
         //literal
         if (ch == '{') {
-            StringBuilder sb = new StringBuilder();
-            do {
-                if (ch == Tag.EOF) {
-                    throw new UnclosedLiteralException("Unclosed literal at line " + line);
-                }
-                sb.append(ch);
-                readch();
-            } while (ch != '}');
-            sb.append(ch);
-            ch = ' ';
-            String s = sb.toString();
-            return new Word(s, Tag.LITERAL);
+            return literals();
         }
 
         //char
         if (ch == '\'') {
-            StringBuilder sb = new StringBuilder();
-            int size = 0;
-            do {
-                if (ch == Tag.EOF) {
-                    throw new UnclosedCharException("Unclosed char at line " + line);
-                }
-                if (size > 1) {
-                    throw new CharWithSizeGraterThanOneException("Invalid char at line " + line);
-                }
-                sb.append(ch);
-                readch();
-                size ++;
-            } while (ch != '\'');
-            sb.append(ch);
-            ch = ' ';
-            String s = sb.toString();
-            return new Word(s, Tag.CHAR);
+            return chars();
         }
 
         Token t = new Token(ch);
         ch = ' ';
         return t;
+    }
+
+    private Word chars() throws UnclosedCharException, CharWithSizeGraterThanOneException, IOException {
+        StringBuilder sb = new StringBuilder();
+        int size = 0;
+        do {
+            if (ch == Tag.EOF) {
+                throw new UnclosedCharException("Unclosed char at line " + line);
+            }
+            if (size > 1) {
+                throw new CharWithSizeGraterThanOneException("Invalid char at line " + line);
+            }
+            sb.append(ch);
+            readch();
+            size ++;
+        } while (ch != '\'');
+        sb.append(ch);
+        ch = ' ';
+        String s = sb.toString();
+        return new Word(s, Tag.CHAR);
+    }
+
+    private Word literals() throws UnclosedLiteralException, IOException {
+        StringBuilder sb = new StringBuilder();
+        do {
+            if (ch == Tag.EOF) {
+                throw new UnclosedLiteralException("Unclosed literal at line " + line);
+            }
+            sb.append(ch);
+            readch();
+        } while (ch != '}');
+        sb.append(ch);
+        ch = ' ';
+        String s = sb.toString();
+        return new Word(s, Tag.LITERAL);
+    }
+
+    private Word identifiers() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        do {
+            sb.append(ch);
+            readch();
+        } while (Character.isLetterOrDigit(ch) || '_' == ch);
+        String s = sb.toString();
+        Word w = words.get(s);
+        if (w != null) {
+            return w;
+        }
+        w = new Word(s, Tag.ID);
+        words.put(s, w);
+        return w;
+    }
+
+    private Token numbers() throws IOException, InvalidFloatException {
+        int value = 0;
+        do {
+            value = 10 * value + Character.digit(ch, 10);
+            readch();
+        } while (Character.isDigit(ch));
+        if (ch == '.') {
+            StringBuilder stringValueBd = new StringBuilder("" + value);
+            int size = 0;
+            do {
+                stringValueBd.append(ch);
+                readch();
+                size ++;
+            } while (Character.isDigit(ch));
+            if (size < 2) {
+                throw new InvalidFloatException("Invalid float value at line " + line);
+            }
+            return new NumFloat(stringValueBd.toString());
+        }
+        return new NumInt(value);
+    }
+
+    private void comment() throws IOException, UnclosedCommentException {
+        int commentLine = line;
+        do {
+            readch();
+            if (ch == '\n') {
+                line++; //conta linhas
+            } else if (ch == Tag.EOF) {
+                throw new UnclosedCommentException("Unclosed literal at line " + commentLine);
+            }
+        } while (ch != '*' || !readch('/'));
     }
 }

@@ -13,26 +13,6 @@ public class Item {
         return lexeme;
     }
 
-    public void setLexeme(String lexeme) {
-        this.lexeme = lexeme;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
-    public String getType() {
-        return value;
-    }
-
-    public void setType(String type) {
-        this.value = type;
-    }
-
     @Override
     public String toString() {
         return "Item{" +

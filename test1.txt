@@ -5,7 +5,7 @@ program teste1
  a,x is float;
 begin
  a = 12a;
- x = 12.;
+ x = 12.3;
  c = 'a'
  read (a);
  read (b);
