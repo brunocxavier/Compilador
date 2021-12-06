@@ -58,7 +58,9 @@ public class Lexer {
     /* Lê o próximo caractere do arquivo e verifica se é igual a c*/
     private boolean readch(char c) throws IOException{
         readch();
-        if (ch != c) return false;
+        if (ch != c) {
+            return false;
+        }
         ch = ' ';
         return true;
     }
@@ -70,15 +72,12 @@ public class Lexer {
             if (ch != ' ' && ch != '\t' && ch != '\r' && ch != '\b') {
                 if (ch == '\n') {
                     line++; //conta linhas
+                } else if (ch == '/' && readch('*')) { //comentario
+                        comment();
                 } else {
                     break;
                 }
             }
-        }
-
-        //Comentario {
-        if (ch == '/' && readch('*')) {
-            comment();
         }
 
         switch (ch) {
@@ -226,7 +225,7 @@ public class Lexer {
             if (ch == '\n') {
                 line++; //conta linhas
             } else if (ch == Tag.EOF) {
-                throw new UnclosedCommentException("Unclosed literal at line " + commentLine);
+                throw new UnclosedCommentException("Unclosed comment at line " + commentLine);
             }
         } while (ch != '*' || !readch('/'));
     }

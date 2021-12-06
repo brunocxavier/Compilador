@@ -11,8 +11,8 @@ public class App {
             TableOfSymbols actualTable = new TableOfSymbols();
             int level = 0;
 
-            System.out.println("Tokens");
-            for (;;) {
+            System.out.print("Tokens");
+            for (int i = 0;; i++) {
                 Token token = lexer.scan();
                 if (token.tag == Tag.EOF) {
                     break;
@@ -26,7 +26,10 @@ public class App {
                         }
                     }
                 }
-                System.out.println(token);
+                if (i % 10 == 0){//Teste de linha para melhorar a visibilidade do codigo e facilitar o print
+                    System.out.println();
+                }
+                System.out.print(token + " ");
             }
 
             System.out.println();
@@ -34,7 +37,10 @@ public class App {
             for (Symbol symbol : actualTable.getTable()) {
                 System.out.println(symbol);
             }
+            System.out.println();
+            System.out.println("Sucesso");
         } catch (Exception e) {
+            System.out.println();
             e.printStackTrace();
         }
 
