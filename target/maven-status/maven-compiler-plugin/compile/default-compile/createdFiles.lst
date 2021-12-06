@@ -1,6 +1,7 @@
 com\cefet\compilador\Lexer.class
 com\cefet\compilador\NumFloat.class
 com\cefet\compilador\App.class
+com\cefet\compilador\Symbol.class
 com\cefet\compilador\Token.class
 com\cefet\compilador\TableOfSymbols.class
 com\cefet\compilador\exception\CharWithSizeGraterThanOneException.class
