@@ -23,8 +23,4 @@ public class Symbol {
                 ", value='" + value + '\'' +
                 '}';
     }
-
-    private String getValueString() {
-        return !value.equals("") ? ", value=" + value : "";
-    }
 }
