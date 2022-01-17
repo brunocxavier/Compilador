@@ -72,8 +72,13 @@ public class Lexer {
             if (ch != ' ' && ch != '\t' && ch != '\r' && ch != '\b') {
                 if (ch == '\n') {
                     line++; //conta linhas
-                } else if (ch == '/' && readch('*')) { //comentario
+                } else if (ch == '/') {//comentario
+                    if (readch('*')) {
                         comment();
+                    } else {
+                        Token t = new Token('/');
+                        return t;
+                    }
                 } else {
                     break;
                 }

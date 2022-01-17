@@ -1,0 +1,20 @@
+program teste7
+begin
+	a, b, count is int;
+	write ({Jogador 1 entre com o numero a ser adivinhado});
+	read (a);
+	repeat
+		count = count + 1;
+		write ({Jogador 2 tente adivinhar o numero do jogador 1});
+		read (b);
+		if a > b then
+			write ({O seu numero e menor})
+		end;
+		if a < b then
+			write ({O seu numero e maior})
+		end
+	until a == b;
+ 	write ({Voce precisou de })
+	write (count)
+	write ({ tentativas.})
+end.

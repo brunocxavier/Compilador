@@ -5,6 +5,8 @@ import static com.cefet.compilador.Tag.*;
 public class Parser {
     private Token tok;
     private Lexer lexer;
+    private TableOfSymbols actualTable = new TableOfSymbols();
+    private int level = 0;
 
     public Parser(Lexer lexer) {
         this.lexer = lexer;
@@ -218,6 +220,7 @@ public class Parser {
             case CHAR:
             case '!':
             case '-':
+            case '(':
                 expression();
                 break;
             default:
@@ -548,13 +551,27 @@ public class Parser {
 
     private void eat(int t) throws Exception {
         if (tok.getTag() == t) {
+            fillTableOfSymbols();
             advance();
         } else {
             error();
         }
     }
 
+    private void fillTableOfSymbols() {
+        if (tok instanceof Word) {
+            /*TODO Se for um novo escopo deve se criar uma nova tabela de simbolos pra esse nivel
+             *  se for o fim de um escopo deve mudar a tabela atual para o pai da atual*/
+            if (tok.tag == Tag.ID) {
+                Word word = (Word) tok;
+                if (!actualTable.exists(word.getLexeme())) {
+                    actualTable.add(new Symbol(word.getLexeme(), level, ""));
+                }
+            }
+        }
+    }
+
     private void error() throws Exception {
-        throw new Exception("token invalido na linha" + this.lexer.getLine());
+        throw new Exception("token " + tok + " invalido na linha " + this.lexer.getLine());
     }
 }

@@ -4,7 +4,7 @@ public class NumFloat extends Token{
     public final float value;
 
     public NumFloat(String value) {
-        super(Tag.NUM);
+        super(Tag.FLOAT);
         this.value = Float.parseFloat(value);
     }
 

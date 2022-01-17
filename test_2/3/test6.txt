@@ -1,0 +1,15 @@
+program test3
+begin
+a, aux is int; 
+b is float;
+write ({Workaround necessario});
+b = 0; 
+write (a);
+write(b);
+if (a>b) then 
+aux = b; 
+b = a; 
+a = aux 
+end; 
+write(a; 
+write(b)
