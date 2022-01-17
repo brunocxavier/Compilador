@@ -7,7 +7,7 @@ public class App {
             return;
         }
         try {
-            Lexer lexer = new Lexer("test_2/4/test7.txt");
+            Lexer lexer = new Lexer(args[0]);
             Parser parser = new Parser(lexer);
             parser.run();
             System.out.println("Sucesso");
