@@ -27,6 +27,9 @@ public class Tag {
     NE = 291,
     OR = 292,
     AND = 293,
+    INT_TYPE = 294,
+    FLOAT_TYPE = 295,
+    CHAR_TYPE = 296,
     EOF = 65535;
 }
 

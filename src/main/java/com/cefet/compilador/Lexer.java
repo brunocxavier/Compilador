@@ -36,10 +36,10 @@ public class Lexer {
         reserve(new Word ("program", Tag.PRG));
         reserve(new Word ("begin", Tag.BEG));
         reserve(new Word ("end", Tag.END));
-        reserve(new Word ("int", Tag.INT));
+        reserve(new Word ("int", Tag.INT_TYPE));
         reserve(new Word("is", Tag.IS));
-        reserve(new Word("char", Tag.CHAR));
-        reserve(new Word("float", Tag.FLOAT));
+        reserve(new Word("char", Tag.CHAR_TYPE));
+        reserve(new Word("float", Tag.FLOAT_TYPE));
         reserve(new Word("then", Tag.THEN));
         reserve(new Word("else", Tag.ELSE));
         reserve(new Word("repeat", Tag.REPEAT));
@@ -228,5 +228,9 @@ public class Lexer {
                 throw new UnclosedCommentException("Unclosed comment at line " + commentLine);
             }
         } while (ch != '*' || !readch('/'));
+    }
+
+    public int getLine() {
+        return line;
     }
 }

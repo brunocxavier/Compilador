@@ -8,11 +8,12 @@ public class App {
         }
         try {
             Lexer lexer = new Lexer(args[0]);
+            Parser parser = new Parser(lexer);
+            parser.run();
             TableOfSymbols actualTable = new TableOfSymbols();
             int level = 0;
 
-            System.out.print("Tokens");
-            for (int i = 0;; i++) {
+            for (;;) {
                 Token token = lexer.scan();
                 if (token.tag == Tag.EOF) {
                     break;
@@ -25,9 +26,6 @@ public class App {
                             actualTable.add(new Symbol(word.getLexeme(), level, ""));
                         }
                     }
-                }
-                if (i % 10 == 0){//Teste de linha para melhorar a visibilidade do codigo e facilitar o print
-                    System.out.println();
                 }
                 System.out.print(token + " ");
             }
