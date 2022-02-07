@@ -1,0 +1,13 @@
+program teste2
+begin
+    a, b is int;
+    c, d, var is float;
+    write ({Workaround necessario});
+    read (a);
+    b = a * a;
+    c = b + a/2 * (35/b);
+    write (c);
+    var = 34.2;
+    c = var + 2.2 + a;
+    write (val)
+end.

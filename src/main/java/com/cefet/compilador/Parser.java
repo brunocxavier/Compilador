@@ -1,12 +1,24 @@
 package com.cefet.compilador;
 
+import com.cefet.compilador.enums.ParserState;
+import com.cefet.compilador.enums.Type;
+import com.cefet.compilador.exception.InvalidTokenException;
+import com.cefet.compilador.exception.InvalidTypeException;
+import com.cefet.compilador.exception.RepeatedDeclarationException;
+import com.cefet.compilador.exception.VarNotDeclaredException;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.cefet.compilador.Tag.*;
+import static com.cefet.compilador.enums.ParserState.*;
 
 public class Parser {
     private Token tok;
-    private Lexer lexer;
-    private TableOfSymbols actualTable = new TableOfSymbols();
-    private int level = 0;
+    private final Lexer lexer;
+    private final TableOfSymbols actualTable = new TableOfSymbols();
+    private List<Word> declarations = new ArrayList<>();
+    private ParserState state = INITIAL;
 
     public Parser(Lexer lexer) {
         this.lexer = lexer;
@@ -18,30 +30,30 @@ public class Parser {
     }
 
     private void program() throws Exception {
-        switch (tok.getTag()) {
-            case PRG:
-                eat(PRG);
-                eat(ID);
-                eat(BEG);
-                decl_list();
-                stmt_list();
-                eat(END);
-                eat('.');
-                break;
-            default:
-                error();
+        if (tok.getTag() == PRG) {
+            eat(PRG);
+            eat(ID);
+            state = OTHER;
+            fillTableOfSymbols(Type.TYPE_VOID);//adiciona o nome do programa na tabela de simbolos
+            eat(BEG);
+            decl_list();
+            stmt_list();
+            eat(END);
+            eat('.');
+        } else {
+            error();
         }
     }
 
     private void decl_list() throws Exception {
-        switch (tok.getTag()) {
-            case ID:
-                decl();
-                eat(';');
-                decl_list_prime();
-                break;
-            default:
-                error();
+        if (tok.getTag() == ID) {
+            state = DECLARATION;
+            decl();
+            eat(';');
+            decl_list_prime();
+            state = OTHER;
+        } else {
+            error();
         }
     }
 
@@ -62,25 +74,22 @@ public class Parser {
     }
 
     private void decl() throws Exception {
-        switch (tok.getTag()) {
-            case ID:
-                ident_list();
-                eat(IS);
-                type();
-                break;
-            default:
-                error();
+        if (tok.getTag() == ID) {
+            ident_list();
+            eat(IS);
+            Type varType = type();
+            fillTableOfSymbols(varType);
+        } else {
+            error();
         }
     }
 
     private void ident_list() throws Exception {
-        switch (tok.getTag()) {
-            case ID:
-                eat(ID);
-                ident_list_prime();
-                break;
-            default:
-                error();
+        if (tok.getTag() == ID) {
+            eat(ID);
+            ident_list_prime();
+        } else {
+            error();
         }
     }
 
@@ -98,19 +107,20 @@ public class Parser {
         }
     }
 
-    private void type() throws Exception {
+    private Type type() throws Exception {
         switch (tok.getTag()) {
             case INT_TYPE:
                 eat(INT_TYPE);
-                break;
+                return Type.TYPE_INT;
             case FLOAT_TYPE:
                 eat(FLOAT_TYPE);
-                break;
+                return Type.TYPE_FLOAT;
             case CHAR_TYPE:
                 eat(CHAR_TYPE);
-                break;
+                return Type.TYPE_CHAR;
             default:
                 error();
+                return Type.TYPE_ERROR;
         }
     }
 
@@ -172,28 +182,25 @@ public class Parser {
     }
 
     private void assign_stmt() throws Exception {
-        switch (tok.getTag()) {
-            case ID:
-                eat(ID);
-                eat('=');
-                simple_expr();
-                break;
-            default:
-                error();
+        if (tok.getTag() == ID) {
+            Type type1 = eat(ID);
+            eat('=');
+            Type type2 = simple_expr();
+            checkAssignType(type1, type2);
+        } else {
+            error();
         }
     }
 
     private void if_stmt() throws Exception {
-        switch (tok.getTag()) {
-            case IF:
-                eat(IF);
-                condition();
-                eat(THEN);
-                stmt_list();
-                if_stmt_prime();
-                break;
-            default:
-                error();
+        if (tok.getTag() == IF) {
+            eat(IF);
+            condition();
+            eat(THEN);
+            stmt_list();
+            if_stmt_prime();
+        } else {
+            error();
         }
     }
 
@@ -229,75 +236,63 @@ public class Parser {
     }
 
     private void repeat_stmt() throws Exception {
-        switch (tok.getTag()) {
-            case REPEAT:
-                eat(REPEAT);
-                stmt_list();
-                stmt_suffix();
-                break;
-            default:
-                error();
+        if (tok.getTag() == REPEAT) {
+            eat(REPEAT);
+            stmt_list();
+            stmt_suffix();
+        } else {
+            error();
         }
     }
 
     private void stmt_suffix() throws Exception {
-        switch (tok.getTag()) {
-            case UNTIL:
-                eat(UNTIL);
-                condition();
-                break;
-            default:
-                error();
+        if (tok.getTag() == UNTIL) {
+            eat(UNTIL);
+            condition();
+        } else {
+            error();
         }
     }
 
     private void while_stmt() throws Exception {
-        switch (tok.getTag()) {
-            case WHILE:
-                stmt_prefix();
-                stmt_list();
-                eat(END);
-                break;
-            default:
-                error();
+        if (tok.getTag() == WHILE) {
+            stmt_prefix();
+            stmt_list();
+            eat(END);
+        } else {
+            error();
         }
     }
 
     private void stmt_prefix() throws Exception {
-        switch (tok.getTag()) {
-            case WHILE:
-                eat(WHILE);
-                condition();
-                eat(DO);
-                break;
-            default:
-                error();
+        if (tok.getTag() == WHILE) {
+            eat(WHILE);
+            condition();
+            eat(DO);
+        } else {
+            error();
         }
     }
 
     private void read_stmt() throws Exception {
-        switch (tok.getTag()) {
-            case READ:
-                eat(READ);
-                eat('(');
-                eat(ID);
-                eat(')');
-                break;
-            default:
-                error();
+        if (tok.getTag() == READ) {
+            eat(READ);
+            eat('(');
+            eat(ID);
+            eat(')');
+        } else {
+            error();
         }
     }
 
     private void write_stmt() throws Exception {
-        switch (tok.getTag()) {
-            case WRITE:
-                eat(WRITE);
-                eat('(');
-                writable();
-                eat(')');
-                break;
-            default:
-                error();
+        if (tok.getTag() == WRITE) {
+            eat(WRITE);
+            eat('(');
+            writable();
+            eat(')');
+        } else {
+            error();
         }
     }
 
@@ -320,7 +315,7 @@ public class Parser {
         }
     }
 
-    private void expression() throws Exception {
+    private Type expression() throws Exception {
         switch (tok.getTag()) {
             case ID:
             case INT:
@@ -329,15 +324,17 @@ public class Parser {
             case '!':
             case '-':
             case '(':
-                simple_expr();
-                expression_prime();
-                break;
+                Type type1 = simple_expr();
+                Type type2 = expression_prime();
+                return checkType(type1, type2);
             default:
                 error();
+                return Type.TYPE_ERROR;
         }
     }
 
-    private void expression_prime() throws Exception {
+    private Type expression_prime() throws Exception {
+        Type type;
         switch (tok.getTag()) {
             case EQ:
             case '>':
@@ -346,8 +343,8 @@ public class Parser {
             case LE:
             case NE:
                 relop();
-                simple_expr();
-                break;
+                type = simple_expr();
+                return type;
             case ')':
             case THEN:
             case DO:
@@ -355,13 +352,14 @@ public class Parser {
             case ELSE:
             case UNTIL:
             case ';':
-                break;
+                return Type.TYPE_VOID;
             default:
                 error();
+                return Type.TYPE_ERROR;
         }
     }
 
-    private void simple_expr() throws Exception {
+    private Type simple_expr() throws Exception {
         switch (tok.getTag()) {
             case ID:
             case INT:
@@ -370,22 +368,24 @@ public class Parser {
             case '!':
             case '-':
             case '(':
-               term();
-               simple_expr_prime();
-               break;
+               Type type1 = term();
+               Type type2 = simple_expr_prime();
+               return checkType(type1, type2);
             default:
                 error();
+                return Type.TYPE_ERROR;
         }
     }
 
-    private void simple_expr_prime() throws Exception {
+    private Type simple_expr_prime() throws Exception {
+        Type type;
         switch (tok.getTag()) {
             case '+':
             case '-':
             case OR:
                 addop();
-                simple_expr();
-                break;
+                type = simple_expr();
+                return type;
             case EQ:
             case '>':
             case GE:
@@ -399,13 +399,14 @@ public class Parser {
             case ELSE:
             case UNTIL:
             case ';':
-                break;
+                return Type.TYPE_VOID;
             default:
                 error();
+                return Type.TYPE_ERROR;
         }
     }
 
-    private void term() throws Exception {
+    private Type term() throws Exception {
         switch (tok.getTag()) {
             case ID:
             case INT:
@@ -414,22 +415,27 @@ public class Parser {
             case '!':
             case '-':
             case '(':
-                factor_a();
-                term_prime();
-                break;
+                Type type1 = factor_a();
+                Type type2 = term_prime();
+                return checkOpType(type1, type2);
             default:
                 error();
+                return Type.TYPE_ERROR;
         }
     }
 
-    private void term_prime() throws Exception {
+    private Type term_prime() throws Exception {
+        Type type;
         switch (tok.getTag()) {
             case '*':
-            case '/':
             case AND:
                 mulop();
+                type = term();
+                return type;
+            case '/':
+                mulop();
                 term();
-                break;
+                return Type.TYPE_FLOAT;
             case '+':
             case '-':
             case OR:
@@ -446,51 +452,56 @@ public class Parser {
             case ELSE:
             case UNTIL:
             case ';':
-                break;
+                return Type.TYPE_VOID;
             default:
                 error();
         }
+        return Type.TYPE_ERROR;
     }
 
-    private void factor_a() throws Exception {
+    private Type factor_a() throws Exception {
+        Type type;
         switch (tok.getTag()) {
             case ID:
             case INT:
             case FLOAT:
             case CHAR:
             case '(':
-                factor();
-                break;
+                type = factor();
+                return type;
             case '!':
                 eat('!');
-                factor();
-                break;
+                type = factor();
+                return type;
             case '-':
                 eat('-');
-                factor();
-                break;
+                type = factor();
+                return checkTypeIsNumber(type);
             default:
                 error();
         }
+        return Type.TYPE_ERROR;
     }
 
-    private void factor() throws Exception {
+    private Type factor() throws Exception {
+        Type type;
         switch (tok.getTag()) {
             case ID:
-                eat(ID);
-                break;
+                type = eat(ID);
+                return type;
             case '(':
                 eat('(');
-                expression();
+                type = expression();
                 eat(')');
-                break;
+                return type;
             case INT:
             case FLOAT:
             case CHAR:
-                constant();
-                break;
+                type = constant();
+                return type;
             default:
                 error();
+                return Type.TYPE_ERROR;
         }
     }
 
@@ -533,15 +544,20 @@ public class Parser {
         }
     }
 
-    private void constant() throws Exception {
+    private Type constant() throws Exception {
         switch (tok.getTag()) {
             case INT:
+                eat(INT);
+                return Type.TYPE_INT;
             case FLOAT:
+                eat(FLOAT);
+                return Type.TYPE_FLOAT;
             case CHAR:
-                eat(tok.getTag());
-                break;
+                eat(CHAR);
+                return Type.TYPE_CHAR;
             default:
                 error();
+                return Type.TYPE_ERROR;
         }
     }
 
@@ -549,29 +565,120 @@ public class Parser {
         this.tok = this.lexer.scan();
     }
 
-    private void eat(int t) throws Exception {
+    private Type eat(int t) throws Exception {
         if (tok.getTag() == t) {
-            fillTableOfSymbols();
-            advance();
+            if (t == ID) {
+                return eatId();
+            } else {
+                advance();
+                return Type.TYPE_VOID;
+            }
         } else {
             error();
+            return Type.TYPE_ERROR;
         }
     }
 
-    private void fillTableOfSymbols() {
+    private Type eatId() throws Exception {
+        Type type;
+        if (state.equals(OTHER)) {
+            type = checkVarIsDeclared();
+        } else {
+            checkVarAlreadyOnTableAndAddToNewVarsList();
+            type = Type.TYPE_VOID;
+        }
+        advance();
+        return type;
+    }
+
+    private void checkVarAlreadyOnTableAndAddToNewVarsList() throws RepeatedDeclarationException {
         if (tok instanceof Word) {
-            /*TODO Se for um novo escopo deve se criar uma nova tabela de simbolos pra esse nivel
-             *  se for o fim de um escopo deve mudar a tabela atual para o pai da atual*/
-            if (tok.tag == Tag.ID) {
-                Word word = (Word) tok;
-                if (!actualTable.exists(word.getLexeme())) {
-                    actualTable.add(new Symbol(word.getLexeme(), level, ""));
-                }
+            Word word = (Word) tok;
+            if (!actualTable.exists(word.getLexeme())) {
+                declarations.add(word);
+            } else {
+                throw new RepeatedDeclarationException("Duplicate variable declaration on line " + this.lexer.getLine() + " var: " + word.getLexeme());
             }
         }
     }
 
-    private void error() throws Exception {
-        throw new Exception("token " + tok + " invalido na linha " + this.lexer.getLine());
+    private Type checkVarIsDeclared() throws VarNotDeclaredException {
+        Type type = Type.TYPE_ERROR;
+        if (tok instanceof Word) {
+            Word word = (Word) tok;
+            if (!actualTable.exists(word.getLexeme())) {
+                throw new VarNotDeclaredException(word.getLexeme() + " is not declared and is used on line " + this.lexer.getLine());
+            }
+            type = actualTable.getSymbol(word.getLexeme()).getType();
+        }
+        return type;
     }
+
+    private void fillTableOfSymbols(Type type) {
+        for (Word word : declarations) {
+            actualTable.add(new Symbol(word.getLexeme(), 0, "", type));
+        }
+        declarations = new ArrayList<>();
+    }
+
+    private void error() throws InvalidTokenException {
+        throw new InvalidTokenException("invalid token " + tok + " on line " + this.lexer.getLine());
+    }
+
+    private void typeError() throws InvalidTypeException {
+        throw new InvalidTypeException("invalid type on line " + this.lexer.getLine());
+    }
+
+    private Type checkType(Type type1, Type type2) {
+        if (type1.equals(type2)) {
+            return type1;
+        }
+        if (type1.equals(Type.TYPE_VOID)) {
+            return type2;
+        }
+        if (type2.equals(Type.TYPE_VOID)) {
+            return type1;
+        }
+        if ((type1.equals(Type.TYPE_INT) && type2.equals(Type.TYPE_FLOAT)) || (type2.equals(Type.TYPE_INT) && type1.equals(Type.TYPE_FLOAT))) {
+            return Type.TYPE_FLOAT;
+        }
+        return Type.TYPE_ERROR;
+    }
+
+    private Type checkTypeIsNumber(Type type) {
+        return (type.equals(Type.TYPE_INT) || type.equals(Type.TYPE_FLOAT)) ? type : Type.TYPE_ERROR;
+    }
+
+    private void checkAssignType(Type type1, Type type2) throws InvalidTypeException {
+        if (Type.TYPE_FLOAT.equals(type1)) {
+             if (!Type.TYPE_FLOAT.equals(type2) && !Type.TYPE_INT.equals(type2)) {
+                   typeError();
+             }
+        } else if (!type1.equals(type2)) {
+            typeError();
+        }
+    }
+
+    private Type checkOpType(Type type1, Type type2) {
+        if (type1.equals(Type.TYPE_INT) && type2.equals(Type.TYPE_INT)) {
+            return Type.TYPE_INT;
+        }
+        if (type1.equals(Type.TYPE_FLOAT) && type2.equals(Type.TYPE_INT)) {
+            return Type.TYPE_FLOAT;
+        }
+        if (type1.equals(Type.TYPE_INT) && type2.equals(Type.TYPE_FLOAT)) {
+            return Type.TYPE_FLOAT;
+        }
+        if (type1.equals(Type.TYPE_FLOAT) && type2.equals(Type.TYPE_FLOAT)) {
+            return Type.TYPE_FLOAT;
+        }
+        if (type1.equals(Type.TYPE_VOID)) {
+            return type2;
+        }
+        if (type2.equals(Type.TYPE_VOID)) {
+            return type1;
+        }
+        return Type.TYPE_ERROR;
+    }
+
 }

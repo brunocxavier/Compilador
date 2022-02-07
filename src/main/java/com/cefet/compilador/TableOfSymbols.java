@@ -27,6 +27,10 @@ public class TableOfSymbols {
         return itemOp.isPresent() || existsInTop(lexeme);
     }
 
+    public Symbol getSymbol(String lexeme) {
+        return table.stream().filter(item -> item.getLexeme().equals(lexeme)).findAny().orElse(null);
+    }
+
     private boolean existsInTop(String lexeme) {
         return topTable != null && topTable.exists(lexeme);
     }

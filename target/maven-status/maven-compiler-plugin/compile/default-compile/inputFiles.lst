@@ -1,11 +1,16 @@
+C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\exception\InvalidTypeException.java
 C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\Tag.java
+C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\enums\ParserState.java
+C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\exception\RepeatedDeclarationException.java
 C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\Lexer.java
 C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\NumInt.java
+C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\enums\Type.java
 C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\App.java
 C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\Symbol.java
 C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\exception\UnclosedLiteralException.java
 C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\exception\CharWithSizeGraterThanOneException.java
 C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\exception\UnclosedCommentException.java
+C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\exception\VarNotDeclaredException.java
 C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\NumFloat.java
 C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\exception\UnclosedCharException.java
 C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\TableOfSymbols.java
@@ -13,3 +18,4 @@ C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com
 C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\exception\InvalidFloatException.java
 C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\Token.java
 C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\Word.java
+C:\Users\bruno\Desktop\Cefet\7_periodo\Compiladores\Compilador\src\main\java\com\cefet\compilador\exception\InvalidTokenException.java
